@@ -171,3 +171,37 @@ from dual;
 
 select 'atguigu' regexp 'gu.gu','atguigu' regexp '[ab]'
 from dual;
+
+# 3. 逻辑运算符: OR || AND && NOT ! XOR
+# OR AND
+select last_name, salary, department_id
+from employees
+# where department_id = 10 or department_id = 20;
+# where department_id = 10 and department_id = 20;
+where department_id = 50
+  and salary > 6000;
+
+# NOT
+select last_name, salary, department_id
+from employees
+# where salary not between 6000 and 8000;
+# where commission_pct is not null;
+where not commission_pct <=> null;
+
+# XOR: 追求的"异"
+select last_name, salary, department_id
+from employees
+where department_id = 50 xor salary > 6000;
+
+# 注意: AND的优先级高于OR
+
+# 4. 位运算符: & | ^ ~ >> <<
+select 12 & 5, 12 | 5, 12 ^ 5
+from dual;
+
+select 10 & ~1
+from dual;
+
+# 在一定范围内满足: 每向左移动1位，相当于乘以2，每向右移动一位，相当于除以2
+select 4 << 1, 8 >> 1
+from dual;
