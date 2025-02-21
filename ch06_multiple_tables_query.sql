@@ -277,39 +277,94 @@ FROM employees e
                     ON e.department_id = d.department_id
 WHERE e.department_id IS NULL;
 
+# 10. SQL99语法的新特性1: 自然连接
+
+SELECT e.employee_id, e.last_name, d.department_name
+FROM employees e
+         JOIN departments d
+              ON e.department_id = d.department_id
+                  AND e.manager_id = d.manager_id;
+
+# NATURAL JOIN: 它会帮你自动查询两种连接表中`所有相同的字段`，然后进行`等值连接`>
+SELECT e.employee_id, e.last_name, d.department_name
+FROM employees e
+         NATURAL JOIN departments d;
+
+# 11. SQL99语法的新特性2: USING
+SELECT e.employee_id, e.last_name, d.department_name
+FROM employees e
+         JOIN
+     departments d
+     ON e.department_id = d.department_id;
+
+SELECT e.employee_id, e.last_name, d.department_name
+FROM employees e
+         JOIN departments d
+              USING (department_id);
+
+# 拓展:
+SELECT e.last_name, j.job_title, d.department_name
+FROM employees e
+         INNER JOIN departments d
+         INNER JOIN jobs j
+                    ON e.department_id = d.department_id
+                        AND e.job_id = j.job_id;
+
 # 课后练习:
 
 # 储备：建表操作：
-CREATE TABLE `t_dept` (
-                          `id` INT(11) NOT NULL AUTO_INCREMENT,
-                          `deptName` VARCHAR(30) DEFAULT NULL,
-                          `address` VARCHAR(40) DEFAULT NULL,
-                          PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-CREATE TABLE `t_emp` (
-                         `id` INT(11) NOT NULL AUTO_INCREMENT,
-                         `name` VARCHAR(20) DEFAULT NULL,
-                         `age` INT(3) DEFAULT NULL,
-                         `deptId` INT(11) DEFAULT NULL,
-                         empno int not null,
-                         PRIMARY KEY (`id`),
-                         KEY `idx_dept_id` (`deptId`)
+CREATE TABLE `t_dept`
+(
+    `id`       INT(11) NOT NULL AUTO_INCREMENT,
+    `deptName` VARCHAR(30) DEFAULT NULL,
+    `address`  VARCHAR(40) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = INNODB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8;
+CREATE TABLE `t_emp`
+(
+    `id`     INT(11) NOT NULL AUTO_INCREMENT,
+    `name`   VARCHAR(20) DEFAULT NULL,
+    `age`    INT(3)      DEFAULT NULL,
+    `deptId` INT(11)     DEFAULT NULL,
+    empno    int     NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `idx_dept_id` (`deptId`)
 #CONSTRAINT `fk_dept_id` FOREIGN KEY (`deptId`) REFERENCES `t_dept` (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE = INNODB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8;
 
-INSERT INTO t_dept(deptName,address) VALUES('华山','华山');
-INSERT INTO t_dept(deptName,address) VALUES('丐帮','洛阳');
-INSERT INTO t_dept(deptName,address) VALUES('峨眉','峨眉山');
-INSERT INTO t_dept(deptName,address) VALUES('武当','武当山');
-INSERT INTO t_dept(deptName,address) VALUES('明教','光明顶');
-INSERT INTO t_dept(deptName,address) VALUES('少林','少林寺');
-INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('风清扬',90,1,100001);
-INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('岳不群',50,1,100002);
-INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('令狐冲',24,1,100003);
-INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('洪七公',70,2,100004);
-INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('乔峰',35,2,100005);
-INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('灭绝师太',70,3,100006);
-INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('周芷若',20,3,100007);
-INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('张三丰',100,4,100008);
-INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('张无忌',25,5,100009);
-INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('韦小宝',18,null,100010);
+INSERT INTO t_dept(deptName, address)
+VALUES ('华山', '华山');
+INSERT INTO t_dept(deptName, address)
+VALUES ('丐帮', '洛阳');
+INSERT INTO t_dept(deptName, address)
+VALUES ('峨眉', '峨眉山');
+INSERT INTO t_dept(deptName, address)
+VALUES ('武当', '武当山');
+INSERT INTO t_dept(deptName, address)
+VALUES ('明教', '光明顶');
+INSERT INTO t_dept(deptName, address)
+VALUES ('少林', '少林寺');
+INSERT INTO t_emp(NAME, age, deptId, empno)
+VALUES ('风清扬', 90, 1, 100001);
+INSERT INTO t_emp(NAME, age, deptId, empno)
+VALUES ('岳不群', 50, 1, 100002);
+INSERT INTO t_emp(NAME, age, deptId, empno)
+VALUES ('令狐冲', 24, 1, 100003);
+INSERT INTO t_emp(NAME, age, deptId, empno)
+VALUES ('洪七公', 70, 2, 100004);
+INSERT INTO t_emp(NAME, age, deptId, empno)
+VALUES ('乔峰', 35, 2, 100005);
+INSERT INTO t_emp(NAME, age, deptId, empno)
+VALUES ('灭绝师太', 70, 3, 100006);
+INSERT INTO t_emp(NAME, age, deptId, empno)
+VALUES ('周芷若', 20, 3, 100007);
+INSERT INTO t_emp(NAME, age, deptId, empno)
+VALUES ('张三丰', 100, 4, 100008);
+INSERT INTO t_emp(NAME, age, deptId, empno)
+VALUES ('张无忌', 25, 5, 100009);
+INSERT INTO t_emp(NAME, age, deptId, empno)
+VALUES ('韦小宝', 18, NULL, 100010);
