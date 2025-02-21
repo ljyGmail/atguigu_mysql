@@ -132,3 +132,69 @@ FROM employees emp,
      employees mgr
 WHERE emp.manager_id = mgr.employee_id;
 
+# 7.3 内连接  vs  外连接
+
+# 内连接: 合并具有同一列的两个以上的表的行，结果集中不包含一个表与另一个表不匹配的行。
+SELECT e.employee_id, d.department_name
+FROM employees e,
+     departments d
+WHERE e.department_id = d.department_id;
+# 只有106条记录
+
+# 外连接: 合并具有同一列的两个以上的表的行，结果集中除了包含一个表与另一个表匹配的行之外，
+#        还查询到了左表 或 右表中不匹配的行。
+
+# 外连接的分类: 左外连接、右外连接、满外连接
+
+# 左外连接: 两个表在连接过程中除了返回满足连接条件的行以外还返回左表中不满足条件的行，这种连接称为左外连接。
+# 右外连接: 两个表在连接过程中除了返回满足连接条件的行以外还返回右表中不满足条件的行，这种连接称为左外连接。
+
+# 练习: 查询所有的员工的last_name，department_name信息
+SELECT e.employee_id, d.department_name
+FROM employees e,
+     departments d
+WHERE e.department_id = d.department_id;
+# 需要使用左外连接
+
+# SQL92语法实现内连接: 见上，略
+# SQL92语法实现外连接: 使用 + ---------MySQL不支持SQL92语法中外连接的写法!
+# 不支持:
+# SELECT e.employee_id, d.department_name
+# FROM employees e,
+#      departments d
+# WHERE e.department_id = d.department_id(+);
+
+# SQL99语法中使用JOIN ... ON 的方式实现多表的查询。这种方式也能解决外连接的问题。MySQL是支持此种方式的。
+# SQL99语法如何实现多表的查询。
+
+# SQL99语法实现内连接:
+SELECT e.last_name, d.department_name
+FROM employees e
+         INNER JOIN departments d
+                    ON e.department_id = d.department_id;
+
+SELECT e.last_name, d.department_name, l.city
+FROM employees e
+         INNER JOIN departments d
+                    ON e.department_id = d.department_id
+         INNER JOIN locations l
+                    ON d.location_id = l.location_id;
+
+# SQL99语法实现外连接:
+
+# 练习: 查询所有的员工的last_name,department_name信息
+SELECT e.last_name, d.department_name
+FROM employees e
+         LEFT JOIN departments d
+                   ON e.department_id = d.department_id;
+
+# 右外连接:
+SELECT e.last_name, d.department_name
+FROM employees e
+         RIGHT JOIN departments d
+                    ON e.department_id = d.department_id;
+
+# 满外连接: MySQL不支持FULL OUTER JOIN
+# SELECT e.last_name, d.department_name
+# FROM employees e FULL OUTER JOIN departments d
+# ON e.department_id = d.department_id;
