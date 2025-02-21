@@ -86,10 +86,49 @@ WHERE emp.department_id = dept.department_id;
 
 # 6. 如果有n个表实现多表的查询，则需要至少n-1个连接条件。
 # 练习: 查询员工的employee_id, last_name, department_name, city
-SELECT e.employee_id, e.last_name, d.department_name, l.city,e.department_id,l.location_id
+SELECT e.employee_id, e.last_name, d.department_name, l.city, e.department_id, l.location_id
 FROM employees e,
      departments d,
      locations l
 WHERE e.department_id = d.department_id
   AND d.location_id = l.location_id;
+
+/*
+演绎式: 提出问题1 --> 解决问题1 --> 提出问题2 --> 解决问题2 ...
+
+归纳式: 总 -> 分
+ */
+
+# 7. 多表查询的分类
+/*
+角度1: 等值连接  vs  非等值连接
+
+角度2: 自连接  vs  非自连接
+
+角度3: 内连接  vs  外连接
+ */
+
+# 7.1 等值连接  vs  非等值连接
+
+# 非等值连接的例子:
+SELECT *
+FROM job_grades;
+
+SELECT e.last_name, e.salary, j.grade_level
+FROM employees e,
+     job_grades j
+# WHERE e.salary BETWEEN j.lowest_sal AND j.highest_sal;
+WHERE e.salary >= j.lowest_sal
+  AND e.salary <= j.highest_sal;
+
+# 7,2 自连接  vs  非自连接
+SELECT *
+FROM employees;
+
+# 自连接的例子:
+# 练习: 查询员工姓名及其管理者的id和姓名。
+SELECT emp.employee_id, emp.last_name, mgr.employee_id, mgr.last_name
+FROM employees emp,
+     employees mgr
+WHERE emp.manager_id = mgr.employee_id;
 
