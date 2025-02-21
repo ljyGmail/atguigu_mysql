@@ -198,3 +198,118 @@ FROM employees e
 # SELECT e.last_name, d.department_name
 # FROM employees e FULL OUTER JOIN departments d
 # ON e.department_id = d.department_id;
+
+# 8. UNION 和 UNION ALL的使用
+# UNION: 会执行去重操作
+# UNION ALL: 不会执行去重操作
+# 结论: 如果明确知道合并事件后的结果数据不存在重复数据，或者不需要去除重复的数据，
+# 则尽量使用UNION ALL语句，以提高数据查询的效率。
+
+# 9. 7种JOIN的实现:
+
+# 中图: 内连接
+SELECT e.employee_id, d.department_name
+FROM employees e
+         JOIN departments d
+              ON e.department_id = d.department_id;
+
+# 左上图: 左外连接
+SELECT e.employee_id, d.department_name
+FROM employees e
+         LEFT JOIN departments d
+                   ON e.department_id = d.department_id;
+
+# 右上图: 右外连接
+SELECT e.employee_id, d.department_name
+FROM employees e
+         RIGHT JOIN departments d
+                    ON e.department_id = d.department_id;
+
+# 左中图:
+SELECT e.employee_id, d.department_name, e.department_id
+FROM employees e
+         LEFT JOIN departments d
+                   ON e.department_id = d.department_id
+WHERE d.department_id IS NULL;
+
+# 右中图:
+SELECT e.employee_id, d.department_name
+FROM employees e
+         RIGHT JOIN departments d
+                    ON e.department_id = d.department_id
+WHERE e.department_id IS NULL;
+
+# 左下图: 满外连接
+# 方式1: 左上图 UNION ALL 右中图
+SELECT e.employee_id, d.department_name
+FROM employees e
+         LEFT JOIN departments d
+                   ON e.department_id = d.department_id
+UNION ALL
+SELECT e.employee_id, d.department_name
+FROM employees e
+         RIGHT JOIN departments d
+                    ON e.department_id = d.department_id
+WHERE e.department_id IS NULL;
+
+# 方式2: 左中图 UNION ALL 右上图
+SELECT e.employee_id, d.department_name
+FROM employees e
+         LEFT JOIN departments d
+                   ON e.department_id = d.department_id
+WHERE d.department_id IS NULL
+UNION ALL
+SELECT e.employee_id, d.department_name
+FROM employees e
+         RIGHT JOIN departments d
+                    ON e.department_id = d.department_id;
+
+# 右下图: 左中图 UNION ALL 右中图
+SELECT e.employee_id, d.department_name
+FROM employees e
+         LEFT JOIN departments d
+                   ON e.department_id = d.department_id
+WHERE d.department_id IS NULL
+UNION ALL
+SELECT e.employee_id, d.department_name
+FROM employees e
+         RIGHT JOIN departments d
+                    ON e.department_id = d.department_id
+WHERE e.department_id IS NULL;
+
+# 课后练习:
+
+# 储备：建表操作：
+CREATE TABLE `t_dept` (
+                          `id` INT(11) NOT NULL AUTO_INCREMENT,
+                          `deptName` VARCHAR(30) DEFAULT NULL,
+                          `address` VARCHAR(40) DEFAULT NULL,
+                          PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+CREATE TABLE `t_emp` (
+                         `id` INT(11) NOT NULL AUTO_INCREMENT,
+                         `name` VARCHAR(20) DEFAULT NULL,
+                         `age` INT(3) DEFAULT NULL,
+                         `deptId` INT(11) DEFAULT NULL,
+                         empno int not null,
+                         PRIMARY KEY (`id`),
+                         KEY `idx_dept_id` (`deptId`)
+#CONSTRAINT `fk_dept_id` FOREIGN KEY (`deptId`) REFERENCES `t_dept` (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO t_dept(deptName,address) VALUES('华山','华山');
+INSERT INTO t_dept(deptName,address) VALUES('丐帮','洛阳');
+INSERT INTO t_dept(deptName,address) VALUES('峨眉','峨眉山');
+INSERT INTO t_dept(deptName,address) VALUES('武当','武当山');
+INSERT INTO t_dept(deptName,address) VALUES('明教','光明顶');
+INSERT INTO t_dept(deptName,address) VALUES('少林','少林寺');
+INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('风清扬',90,1,100001);
+INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('岳不群',50,1,100002);
+INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('令狐冲',24,1,100003);
+INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('洪七公',70,2,100004);
+INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('乔峰',35,2,100005);
+INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('灭绝师太',70,3,100006);
+INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('周芷若',20,3,100007);
+INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('张三丰',100,4,100008);
+INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('张无忌',25,5,100009);
+INSERT INTO t_emp(NAME,age,deptId,empno) VALUES('韦小宝',18,null,100010);
