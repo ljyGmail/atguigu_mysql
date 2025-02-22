@@ -55,3 +55,55 @@ FROM dual;
 # 进制间的转换
 SELECT BIN(10), HEX(10), OCT(10), CONV(10, 10, 8)
 FROM DUAL;
+
+# 2. 字符串函数
+
+SELECT ASCII('Abcdsfsdf'), CHAR_LENGTH('hello'), CHAR_LENGTH('我们'), LENGTH('hello'), LENGTH('我们')
+FROM dual;
+
+# xxx worked for yyy
+SELECT CONCAT(emp.last_name, ' worked for ', mgr.last_name) "details"
+FROM employees emp
+         JOIN employees mgr
+              ON emp.manager_id = mgr.employee_id;
+
+SELECT CONCAT_WS('-', 'hello', 'world', 'hello', 'beijing')
+FROM dual;
+
+# 字符串的索引是从1开始的
+SELECT INSERT('helloworld', 2, 3, 'aaaaa'), REPLACE('hello', 'll', 'mmm')
+FROM dual;
+
+SELECT UPPER('Hello'), LOWER('HeLLo')
+FROM dual;
+
+SELECT last_name, salary
+FROM employees
+WHERE LOWER(last_name) = 'King';
+
+SELECT LEFT('hello', 2), RIGHT('hello', 3), RIGHT('hello', 13)
+FROM dual;
+
+# LPAD: 实现右对齐效果
+# RPAD: 实现左对齐效果
+SELECT employee_id, last_name, salary, LPAD(salary, 10, ' ')
+FROM employees;
+
+SELECT CONCAT('---', LTRIM('          he l  l o     '), '***'),
+       TRIM('oo' FROM 'ooooheollo')
+FROM dual;
+
+SELECT REPEAT('hello', 4), LENGTH(SPACE(5)), STRCMP('abc', 'abd')
+FROM dual;
+
+SELECT SUBSTR('hello', 2, 2), LOCATE('lll', 'hello')
+FROM dual;
+
+SELECT ELT(2, 'a', 'b', 'c', 'd'),
+       FIELD('mm', 'gg', 'jj', 'mm', 'dd', 'mm'),
+       FIND_IN_SET('mm', 'gg,,jj,dd,mm,gg')
+FROM dual;
+
+SELECT employee_id, NULLIF(LENGTH(first_name), LENGTH(last_name)) "compare"
+FROM employees;
+
