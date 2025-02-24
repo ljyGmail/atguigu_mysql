@@ -283,3 +283,50 @@ SELECT employee_id,
            END "details"
 FROM employees
 WHERE department_id IN (10, 20, 30);
+
+# 5. 加密与解密的函数
+# PASSWORD()在mysql8.0中弃用。
+/*
+SELECT PASSWORD('mysql')
+FROM dual;
+ */
+
+SELECT MD5('mysql'), SHA('mysql'), MD5(MD5('mysql'))
+FROM dual;
+
+# encode() \ decode()在mysql8,0中弃用>
+/*
+SELECT ENCODE('atguitu', 'mysql'), DECODE(ENCODE('atguitu', 'mysql'), 'mysql')
+FROM dual;
+ */
+
+# 6. MySQL信息函数
+SELECT VERSION(),
+       CONNECTION_ID(),
+       DATABASE(),
+       SCHEMA(),
+       USER(),
+       CURRENT_USER(),
+       CHARSET('尚硅谷'),
+       COLLATION('尚硅谷')
+FROM dual;
+
+# 7. 其他函数
+# 如果n的值小于或者等于0，则只保留整数部分
+SELECT FORMAT(123.123, 2), FORMAT(123.123, 0), FORMAT(123.123, -2)
+FROM dual;
+
+SELECT CONV(16, 10, 2), CONV(8888, 10, 16), CONV(NULL, 10, 2)
+FROM dual;
+
+# 以"192.168.1.100"为例，计算方式为192乘以256的3次方，加上168乘以256的2次方，加上1乘以256，再加上100.
+SELECT INET_ATON('192.168.1.100'), INET_NTOA(3232235876)
+FROM dual;
+
+# BENCHMARK()用于测试表达式的执行效率
+SELECT BENCHMARK(100000, MD5('msqyl'))
+FROM dual;
+
+# CONVERT(): 可以实现字符集的转换
+SELECT CHARSET('atguigu'), CHARSET(CONVERT('atguigu' USING 'gbk'))
+FROM dual;
