@@ -142,3 +142,61 @@ WHERE salary = (SELECT MIN(salary)
                 GROUP BY department_id);
  */
 
+# 5. 多行子查询
+# 5.1 多行子查询的操作符: IN ANY ALL SOME(同ANY)
+
+# 5.2 举例
+# IN:
+SELECT employee_id, last_name
+FROM employees
+WHERE salary IN (SELECT MIN(salary)
+                 FROM employees
+                 GROUP BY department_id);
+
+#  ANY / ALL:
+# 题目: 返回其它job_id中比job_id为‘IT_PROG’部门任一工资低的员工的
+# 员工号、姓名、job_id以及salary。
+SELECT employee_id, last_name, job_id, salary
+FROM employees
+WHERE job_id <> 'IT_PROG'
+  AND salary < ANY (SELECT salary
+                    FROM employees
+                    WHERE job_id = 'IT_PROG');
+
+
+# 题目: 返回其它job_id中比job_id为‘IT_PROG’部门所有工资低的员工的
+# 员工号、姓名、job_id以及salary。
+SELECT employee_id, last_name, job_id, salary
+FROM employees
+WHERE job_id <> 'IT_PROG'
+  AND salary < ALL (SELECT salary
+                    FROM employees
+                    WHERE job_id = 'IT_PROG');
+
+# 题目: 查询平均工资最低的部门id
+# MySQL中的聚合函数是不能嵌套使用的
+# 方式1:
+SELECT department_id
+FROM employees
+GROUP BY department_id
+HAVING AVG(salary) = (SELECT MIN(avg_sal)
+                      FROM (SELECT AVG(salary) avg_sal
+                            FROM employees
+                            GROUP BY department_id) t_dept_avg_sal);
+
+# 方式2:
+SELECT department_id
+FROM employees
+GROUP BY department_id
+HAVING AVG(salary) <= ALL (SELECT AVG(salary) avg_sal
+                           FROM employees
+                           GROUP BY department_id)
+
+# 5.3 空值问题
+SELECT last_name
+FROM employees
+WHERE employee_id NOT IN (SELECT manager_id
+                          FROM employees
+    # WHERE manager_id IS NOT NULL
+);
+
