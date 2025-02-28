@@ -244,3 +244,22 @@ ROLLBACK;
 # 7)
 SELECT *
 FROM myemp3;
+
+###############################
+# 9. 测试MySQL8.0的新特性: DDL的原子化
+CREATE DATABASE mytest;
+
+USE mytest;
+
+CREATE TABLE book1
+(
+    book_id   INT,
+    book_name VARCHAR(255)
+);
+
+SHOW TABLES;
+
+# 下面语句，由于不存在book2表，所以会报错。但是在MySQL5.7中，book1表会被删除。而在MySQL8.0中，book1表不会被删除。
+DROP TABLE book1, book2;
+
+SHOW TABLES;
