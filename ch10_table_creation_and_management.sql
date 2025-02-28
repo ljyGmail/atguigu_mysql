@@ -125,3 +125,64 @@ WHERE 1 = 2; # 山无棱，天地合，乃敢与君绝。
 
 SELECT *
 FROM employees_blank;
+
+# 3. 修改表 --> ALTER TABLE
+DESC myemp1;
+
+# 3.1 添加一个字段
+ALTER TABLE myemp1
+    ADD salary double(10, 2); # 默认添加到表中的最后一个字段的位置
+
+ALTER TABLE myemp1
+    ADD phone_number varchar(20) FIRST;
+
+ALTER TABLE myemp1
+    ADD email varchar(45) AFTER emp_name;
+
+# 3.2 修改一个字段: 数据类型、长度、默认值(略)
+ALTER TABLE myemp1
+    MODIFY emp_name varchar(25);
+
+ALTER TABLE myemp1
+    MODIFY emp_name varchar(35) DEFAULT 'aaa';
+
+# 3.3 重命名一个字段
+ALTER TABLE myemp1
+    CHANGE salary monthly_salary DOUBLE(10, 2);
+
+ALTER TABLE myemp1
+    CHANGE email my_email varchar(50);
+
+# 3.4 删除一个字段
+ALTER TABLE myemp1
+    DROP COLUMN my_email;
+
+# 4. 重命名表
+# 方式1:
+RENAME TABLE myemp1 TO myemp11;
+
+DESC myemp11;
+
+# 方式2:
+ALTER TABLE myemp2
+    RENAME TO myemp12;
+
+DESC myemp12;
+
+# 5. 删除表
+# 不光将表结构删除掉，同时表中的数据也删除掉，释放表空间
+DROP TABLE IF EXISTS myemp2;
+
+DROP TABLE IF EXISTS myemp12;
+
+# 6. 清空表
+# 清空表，表示清空表中的所有数据，但是表结构保留。
+SELECT *
+FROM employees_copy;
+
+TRUNCATE TABLE employees_copy;
+
+SELECT *
+FROM employees_copy;
+
+DESC employees_copy;
