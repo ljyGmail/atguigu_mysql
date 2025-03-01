@@ -58,3 +58,62 @@ DESC employees;
 
 # 说明: emp1表中要添加数据的字段的长度不能低于employees表中查询的字段的长度。
 # 如果emp1表中要添加数据的字段的长度低于employees表中查询的字段的长度的话，就有添加不成功的风险。
+
+# 2. 更新数据(或修改数据)
+# UPDATE ... SET ... WHERE ...
+# 是可以实现批量修改数据的。
+UPDATE emp1
+SET hire_date = CURDATE()
+WHERE id = 5;
+
+SELECT *
+FROM emp1;
+
+# 同时修改一条数据的多个字段
+UPDATE emp1
+SET hire_date = CURDATE(),
+    salary    = 6000
+WHERE id = 4;
+
+# 题目: 将表中姓名中包含a的提薪20%
+UPDATE emp1
+SET salary=salary * 1.2
+WHERE name LIKE '%a%';
+
+# 修改数据时，是可能存在不成功的情况的。(可能是由于约束的影响造成的)
+UPDATE employees
+SET department_id=1000
+WHERE employee_id = 102;
+
+# 3. 删除数据 DELETE FROM ... WHERE ...
+DELETE
+FROM emp1
+WHERE id = 1;
+
+# 在删除数据时，也有可能因为约束的影响，导致删除失败
+DELETE
+FROM departments
+WHERE department_id = 50;
+
+# 小结: DML操作默认情况下，执行完以后都会自动提交数据。
+# 如果希望执行完以后不自动提交数据，则需要使用 SET autocommit = FALSE。
+
+# 4. MySQL8的新特性: 计算列
+USE atguigudb;
+
+CREATE TABLE test1
+(
+    a INT,
+    b INT,
+    c INT GENERATED ALWAYS AS (a + b) VIRTUAL # 字段c即为计算列
+);
+
+INSERT INTO test1(a, b)
+VALUES (10, 20);
+
+SELECT *
+FROM test1;
+
+UPDATE test1
+SET a=100
+WHERE TRUE;
