@@ -1,6 +1,7 @@
 # 第12章 MySQL数据类型精讲
+# 本章的内容测试建议使用MySQL5.7进行测试
 
-# 关于属性: character set name
+# 1. 关于属性: character set name
 
 SHOW VARIABLES LIKE 'character_%';
 
@@ -27,4 +28,64 @@ CREATE TABLE temp1
 );
 
 SHOW CREATE TABLE temp1;
+
+# 2. 整形数据类型
+
+CREATE TABLE test_int1
+(
+    f1 TINYINT,
+    f2 SMALLINT,
+    f3 MEDIUMINT,
+    f4 INTEGER,
+    f5 BIGINT
+);
+
+DESC test_int1;
+
+INSERT INTO test_int1(f1)
+VALUES (12),
+       (-12),
+       (-128),
+       (127);
+
+SELECT *
+FROM test_int1;
+
+# Out of range value for column 'f1' at row 1
+INSERT INTO test_int1(f1)
+VALUES (128);
+
+CREATE TABLE test_int2
+(
+    f1 INT,
+    f2 INT(5),
+    f3 INT(5) ZEROFILL # ① 显示宽度为5.当insert的值不足5位时，使用0填充。 ② 当使用ZEROFILL时，自动会添加UNSIGNED。
+);
+
+INSERT INTO test_int2(f1, f2)
+VALUES (123, 123),
+       (123456, 123456);
+
+SELECT *
+FROM test_int2;
+
+INSERT INTO test_int2(f3)
+VALUES (123),
+       (123456);
+
+SHOW CREATE TABLE test_int2;
+
+CREATE TABLE test_int3
+(
+    f1 INT UNSIGNED
+);
+
+DESC test_int3;
+
+INSERT INTO test_int3
+VALUES (2412321);
+
+# Out of range value for column 'f1' at row 1
+INSERT INTO test_int3
+VALUES (4294967296);
 
