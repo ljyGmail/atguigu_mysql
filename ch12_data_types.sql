@@ -555,3 +555,66 @@ VALUES ('男', '女');
 SELECT *
 FROM temp_mul;
 
+# 10. 二进制类型
+# 10.1 BINARY 与 VARBINARY类型
+CREATE TABLE test_binary1
+(
+    f1 BINARY,
+    f2 BINARY(3),
+    # f3 VARBINARY, # 必须指定长度
+    f4 VARBINARY(10)
+);
+
+DESC test_binary1;
+
+INSERT INTO test_binary1(f1, f2)
+VALUES ('a', 'abc');
+
+# Data too long for column 'f1' at row 1
+INSERT INTO test_binary1(f1)
+VALUES ('ab');
+
+INSERT INTO test_binary1(f2, f4)
+VALUES ('ab', 'ab');
+
+SELECT *
+FROM test_binary1;
+
+SELECT LENGTH(f2), LENGTH(f4)
+FROM test_binary1;
+
+# 10.2 Blob类型
+CREATE TABLE test_blob1
+(
+    id  INT,
+    img MEDIUMBLOB
+);
+
+INSERT INTO test_blob1(id)
+VALUES (1001);
+
+SELECT *
+FROM test_blob1;
+
+# 11. JSON类型
+CREATE TABLE test_json
+(
+    js JSON
+);
+
+INSERT INTO test_json(js)
+VALUES ('{
+  "name": "songhk",
+  "age": 18,
+  "address": {
+    "province": "beijing",
+    "city": "beijing"
+  }
+}');
+
+SELECT *
+FROM test_json;
+
+SELECT js -> '$.name' AS NAME, js -> '$.age' AS age, js -> '$.address.province' AS province, js -> '$.address.city'
+FROM test_json;
+
