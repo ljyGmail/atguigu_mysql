@@ -393,3 +393,165 @@ SET TIME_ZONE = '+8:00';
 SELECT *
 FROM temp_time;
 
+# 7. 文本类型
+# 7.1 CHAR类型
+CREATE TABLE test_char1
+(
+    c1 CHAR,
+    c2 CHAR(5)
+);
+
+DESC test_char1;
+
+INSERT INTO test_char1(c1)
+VALUES ('a');
+
+# Data too long for column 'c1' at row 1
+INSERT INTO test_char1(c1)
+VALUES ('ab');
+
+INSERT INTO test_char1(c2)
+VALUES ('ab');
+
+INSERT INTO test_char1(c2)
+VALUES ('hello');
+
+INSERT INTO test_char1(c2)
+VALUES ('尚');
+
+INSERT INTO test_char1(c2)
+VALUES ('硅谷');
+
+INSERT INTO test_char1(c2)
+VALUES ('尚硅谷教育');
+
+# Data too long for column 'c2' at row 1
+INSERT INTO test_char1(c2)
+VALUES ('尚硅谷IT教育');
+
+SELECT *
+FROM test_char1;
+
+SELECT CONCAT(c2, '***')
+FROM test_char1;
+
+INSERT INTO test_char1(c2)
+VALUES ('ab  ');
+
+SELECT CHAR_LENGTH(c2)
+FROM test_char1;
+
+# 7.2 VARCHAR类型
+/*
+CREATE TABLE test_varchar1
+(
+    name VARCHAR # 错误
+);
+ */
+
+# Column length too big for column 'NAME' (max = 21845);
+/*
+CREATE TABLE test_varchar2
+(
+    name VARCHAR(65535) # 错误
+);
+ */
+
+CREATE TABLE test_varchar3
+(
+    name VARCHAR(5)
+);
+
+INSERT INTO test_varchar3
+VALUES ('尚硅谷'),
+       ('尚硅谷教育');
+
+# Data too long for column 'name' at row 1
+INSERT INTO test_varchar3
+VALUES ('尚硅谷IT教育');
+
+# 7.3 TEXT类型
+CREATE TABLE test_text
+(
+    tx TEXT
+);
+
+INSERT INTO test_text
+VALUES ('atguigu   ');
+
+SELECT CHAR_LENGTH(tx)
+FROM test_text;
+
+# 8. ENUM类型
+CREATE TABLE test_enum
+(
+    season ENUM ('春','夏','秋','冬','unknown')
+);
+
+INSERT INTO test_enum
+VALUES ('春'),
+       ('秋');
+
+# Data truncated for column 'season' at row 1
+INSERT INTO test_enum
+VALUES ('春,秋');
+# Data truncated for column 'season' at row 1
+INSERT INTO test_enum
+VALUES ('人');
+
+INSERT INTO test_enum
+VALUES ('unknown');
+
+# 忽略大小写
+INSERT INTO test_enum
+VALUES ('UNKNOWN');
+
+# 可以使用索引进行枚举元素的调用
+INSERT INTO test_enum
+VALUES (1),
+       ('3');
+
+# 没有限制非空的情况下，可以添加NULL值
+INSERT INTO test_enum
+VALUES (NULL);
+
+SELECT *
+FROM test_enum;
+
+# 9. SET类型
+CREATE TABLE test_set
+(
+    s SET ('A','B','C')
+);
+
+INSERT INTO test_set(s)
+VALUES ('A'),
+       ('A,B');
+
+# 插入重复的SET类型成员时，MySQL会自动删除重复的成员
+INSERT INTO test_set(s)
+VALUES ('A,B,C,A');
+
+# 向SET类型的字段插入SET成员中不存在的值时，MySQL会抛出错误。
+INSERT INTO test_set(s)
+VALUES ('A,B,C,D');
+
+SELECT *
+FROM test_set;
+
+CREATE TABLE temp_mul
+(
+    gender ENUM ('男','女'),
+    hobby  SET ('吃饭','睡觉', '打豆豆','打代码')
+);
+
+INSERT INTO temp_mul
+VALUES ('男', '睡觉,打豆豆');
+
+# Data truncated for column 'gender' at row 1
+INSERT INTO temp_mul
+VALUES ('男', '女');
+
+SELECT *
+FROM temp_mul;
+
