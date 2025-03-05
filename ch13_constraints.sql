@@ -333,3 +333,119 @@ ALTER TABLE test6
 ALTER TABLE test6
     DROP PRIMARY KEY;
 
+
+# 6. 自增长列: AUTO_INCREMENT
+# 6.1 在CREATE TABLE时添加
+CREATE TABLE test7
+(
+    id        INT PRIMARY KEY AUTO_INCREMENT,
+    last_name VARCHAR(15)
+);
+
+# 开发中，一旦主键作用的字段上声明有auto_increment，则我们在添加数据时，
+# 就不要给主键对应的字段去赋值了。
+INSERT INTO test7(last_name)
+VALUES ('Tom');
+
+SELECT *
+FROM test7;
+
+# 当我们向主键(含AUTO_INCREMENT)的字段添加0或NULL时，实际上会自动地往上添加指定的字段的数值
+INSERT INTO test7 (id, last_name)
+VALUES (0, 'Tom');
+
+INSERT INTO test7 (id, last_name)
+VALUES (NULL, 'Tom');
+
+INSERT INTO test7 (id, last_name)
+VALUES (10, 'Tom');
+
+INSERT INTO test7 (id, last_name)
+VALUES (-10, 'Tom');
+
+# 6.2 在ALTER TABLE时添加
+CREATE TABLE test8
+(
+    id        INT PRIMARY KEY,
+    last_name VARCHAR(15)
+);
+
+DESC test8;
+
+ALTER TABLE test8
+    MODIFY id INT AUTO_INCREMENT;
+
+# 6.3 在ALTER TABLE时删除
+ALTER TABLE test8
+    MODIFY id INT;
+
+# 6.4 MySQL 8.0新特性 - 自增变量的持久化
+# 在MySQL 5.7中演示
+CREATE DATABASE dbtest13;
+USE dbtest13;
+
+CREATE TABLE test9
+(
+    id INT PRIMARY KEY AUTO_INCREMENT
+);
+
+INSERT INTO test9
+VALUES (0),
+       (0),
+       (0),
+       (0);
+
+SELECT *
+FROM test9;
+
+DELETE
+FROM test9
+WHERE id = 4;
+
+INSERT INTO test9
+VALUES (0);
+
+DELETE
+FROM test9
+WHERE id = 5;
+
+# 重启服务器
+SELECT *
+FROM test9;
+
+INSERT INTO test9
+VALUES (0);
+
+# 在MySQL 8.0中演示
+CREATE TABLE test9
+(
+    id INT PRIMARY KEY AUTO_INCREMENT
+);
+
+INSERT INTO test9
+VALUES (0),
+       (0),
+       (0),
+       (0);
+
+SELECT *
+FROM test9;
+
+DELETE
+FROM test9
+WHERE id = 4;
+
+INSERT INTO test9
+VALUES (0);
+
+DELETE
+FROM test9
+WHERE id = 5;
+
+# 重启服务器
+SELECT *
+FROM test9;
+
+INSERT INTO test9
+VALUES (0);
+
