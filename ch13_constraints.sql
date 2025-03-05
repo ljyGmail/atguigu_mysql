@@ -617,3 +617,63 @@ SHOW INDEX FROM emp1;
 ALTER TABLE emp1
     DROP INDEX fk_emp1_dept_id;
 
+
+# 8. CHECK 约束
+# MySQL5.7 不支持CHECK约束，MySQL8.0支持CHECK约束。
+CREATE TABLE test10
+(
+    id        INT,
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2) CHECK ( salary > 2000 )
+);
+
+INSERT INTO test10
+VALUES (1, 'Tom', 2500);
+
+# 添加失败
+INSERT INTO test10
+VALUES (1, 'Tom', 1500);
+
+SELECT *
+FROM test10;
+
+
+# 9. DEFAULT约束
+# 9.1 在CREATE TABLE时添加DEFAULT约束
+CREATE TABLE test11
+(
+    id        INT,
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2) DEFAULT 2000
+);
+
+DESC test11;
+
+INSERT INTO test11(id, last_name, salary)
+VALUES (1, 'Tom', 3000);
+
+INSERT INTO test11(id, last_name)
+VALUES (1, 'Tom');
+
+SELECT *
+FROM test11;
+
+# 9.2 在ALTER TABLE时添加约束
+CREATE TABLE test12
+(
+    id        INT,
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2)
+);
+
+DESC test12;
+
+ALTER TABLE test12
+    MODIFY salary DECIMAL(8, 2) DEFAULT 2500;
+
+# 9.3 在ALTER TABLE时删除约束
+ALTER TABLE test12
+    MODIFY salary DECIMAL(8, 2);
+
+SHOW CREATE TABLE test12;
+
