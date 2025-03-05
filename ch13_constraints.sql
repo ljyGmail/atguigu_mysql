@@ -144,7 +144,7 @@ ALTER TABLE test2
 
 # 方式2:
 ALTER TABLE test2
-    MODIFY last_name varchar(15) UNIQUE;
+    MODIFY last_name VARCHAR(15) UNIQUE;
 
 # 4.3 复合的唯一性约束
 CREATE TABLE user
@@ -244,4 +244,92 @@ ALTER TABLE test2
 
 ALTER TABLE test2
     DROP INDEX uk_test2_sal;
+
+# 5. PRIMARY KEY(主键约束)
+# 5.1 在CREATE TABLE时添加约束
+
+# 一个表中最多只有一个主键约束
+# 错误: Multiple primary key defined
+CREATE TABLE test3
+(
+    id        INT PRIMARY KEY, # 列级约束
+    last_name VARCHAR(15) PRIMARY KEY,
+    salary    DECIMAL(10, 2),
+    email     VARCHAR(25)
+);
+
+# 主键约束特征: 非空且唯一，用于唯一地标识表中的一条记录。
+CREATE TABLE TEST4
+(
+    id        INT PRIMARY KEY, # 列级约束
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2),
+    email     VARCHAR(25)
+);
+
+# MySQL的主键名总是PRIMARY，就算自己命名了主键约束名也没用。
+CREATE TABLE TEST5
+(
+    id        INT,
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2),
+    email     VARCHAR(25),
+    # 表级约束
+    CONSTRAINT pk_test5_id PRIMARY KEY (id) # 没有必要起名字。
+);
+
+SELECT *
+FROM information_schema.TABLE_CONSTRAINTS
+WHERE TABLE_NAME = 'test5';
+
+INSERT INTO test4(id, last_name, salary, email)
+VALUES (1, 'Tom', 4500, 'tom@126.com');
+
+# 错误: Duplicate entry '1' for key 'test4.PRIMARY'
+INSERT INTO test4(id, last_name, salary, email)
+VALUES (1, 'Tom', 4500, 'tom@126.com');
+
+# 错误: Column 'id' cannot be null
+INSERT INTO test4(id, last_name, salary, email)
+VALUES (NULL, 'Tom', 4500, 'tom@126.com');
+
+SELECT *
+FROM test4;
+
+CREATE TABLE user1
+(
+    id       INT,
+    name     VARCHAR(15),
+    password VARCHAR(25),
+    PRIMARY KEY (name, password)
+);
+
+# 如果是多列组合的复合主键约束，那么这些列都不允许为空值，并且组合的值不允许重复。
+INSERT INTO user1
+VALUES (1, 'Tom', 'abc');
+
+INSERT INTO user1
+VALUES (1, 'Tom1', 'abc');
+
+# 错误: Column 'name' cannot be null
+INSERT INTO user1
+VALUES (1, NULL, 'abc');
+
+# 5.2 在ALTER TABLE时添加约束
+CREATE TABLE test6
+(
+    id        INT,
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2),
+    email     VARCHAR(25)
+);
+
+DESC test6;
+
+ALTER TABLE test6
+    ADD PRIMARY KEY (id);
+
+# 4.3 如何删除主键约束(在实际开发中，不会去删除表中的主键约束！)
+ALTER TABLE test6
+    DROP PRIMARY KEY;
 
