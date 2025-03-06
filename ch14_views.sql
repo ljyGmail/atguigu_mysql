@@ -125,6 +125,74 @@ DESC vu_emp1;
 # 语法3: 查看视图的属性信息
 SHOW TABLE STATUS LIKE 'vu_emp1';
 
-# 语法3: 查看视图的详细定义信息
+# 语法4: 查看视图的详细定义信息
 SHOW CREATE VIEW vu_emp1;
+
+# 4. "更新"视图中的数据
+# 4.1 一般情况下，可以更新视图的数据
+SELECT *
+FROM vu_emp1;
+
+SELECT employee_id, last_name, salary
+FROM emps;
+
+# 更新视图的数据，会导致基表中的数据的修改
+UPDATE vu_emp1
+SET salary=20000
+WHERE employee_id = 101;
+
+# 同理，更新表中的数据，也会导致视图中的数据的修改
+UPDATE emps
+SET salary=10000
+WHERE employee_id = 101;
+
+# 删除视图中的数据，也会导致表中的数据的删除
+DELETE
+FROM vu_emp1
+WHERE employee_id = 101;
+
+SELECT employee_id, last_name, salary
+FROM emps
+WHERE employee_id = 101;
+
+# 4.2 不能更新视图中的数据
+SELECT *
+FROM vu_emp_sal;
+
+# 更新失败
+UPDATE vu_emp_sal
+SET avg_sal=5000
+WHERE department_id = 30;
+
+# 删除失败
+DELETE
+FROM vu_emp_sal
+WHERE department_id = 30;
+
+# 5. 修改视图
+DESC vu_emp1;
+
+# 方式1:
+CREATE OR REPLACE VIEW vu_emp1
+AS
+SELECT employee_id, last_name, salary, email
+FROM emps
+WHERE salary > 7000;
+
+DESC vu_emp1;
+
+# 方式2:
+    ALTER VIEW vu_emp1
+    AS
+        SELECT employee_id, last_name, salary, email, hire_date
+        FROM emps;
+
+DESC vu_emp1;
+
+# 6. 删除视图
+SHOW TABLES;
+
+DROP VIEW vu_emp4;
+
+DROP VIEW IF EXISTS vu_emp2, vu_emp3;
 
