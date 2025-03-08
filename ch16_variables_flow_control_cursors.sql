@@ -427,3 +427,163 @@ CALL InsertDataWithCondition();
 
 SELECT @x, @pro_value;
 
+# 3. 流程控制
+# 3.1 分支结构之 IF
+
+# 举例1:
+DELIMITER //
+
+CREATE PROCEDURE test_if()
+
+BEGIN
+    # 情况1:
+    # 声明局部变量
+    /*
+    DECLARE stu_name VARCHAR(15);
+
+    IF stu_name IS NULL
+    THEN
+        SELECT 'stu_name is null';
+    END IF;
+     */
+
+    # 情况2: 二选一
+    /*
+    DECLARE email VARCHAR(25) DEFAULT 'aaa';
+
+    IF email IS NULL
+    THEN
+        SELECT 'email is null';
+    ELSE
+        SELECT 'email is not null';
+    END IF;
+     */
+
+    # 情况3: 多选一
+    DECLARE age INT DEFAULT 20;
+
+    IF age > 40
+    THEN
+        SELECT '中老年';
+    ELSEIF age > 18
+    THEN
+        SELECT '青壮年';
+    ELSEIF age > 8
+    THEN
+        SELECT '青少年';
+    ELSE
+        SELECT '婴幼儿';
+    END IF;
+END //
+
+DELIMITER ;
+
+# 调用
+CALL test_if();
+
+DROP PROCEDURE test_if;
+
+# 举例2: 声明存储过程"update_salary_by_eid1"。定义IN参数emp_id，输入员工编号。
+# 判断该员工薪资如果低于8000元并且入职时间超过5年，就涨薪500元; 否则就不变。
+DELIMITER //
+
+CREATE PROCEDURE update_salary_by_eid1(IN emp_id INT)
+BEGIN
+    # 声明局部变量
+    DECLARE emp_sal DOUBLE; # 记录员工工资
+    DECLARE hire_year DOUBLE;
+    # 记录员工入职公司的年头
+
+    # 赋值
+    SELECT salary INTO emp_sal FROM employees WHERE employee_id = emp_id;
+
+    SELECT DATEDIFF(CURDATE(), hire_date) / 365 INTO hire_year FROM employees WHERE employee_id = emp_id;
+
+    # 判断
+    IF emp_sal < 8000 AND hire_year >= 5
+    THEN
+        UPDATE employees SET salary=salary + 500 WHERE employee_id = emp_id;
+    END IF;
+END //
+
+DELIMITER ;
+
+SELECT employee_id, DATEDIFF(CURDATE(), hire_date) / 365, salary
+FROM employees
+WHERE salary < 8000
+  AND DATEDIFF(CURDATE(), hire_date) / 365 >= 5;
+
+# 调用存储过程
+CALL update_salary_by_eid1(104);
+
+DROP PROCEDURE update_salary_by_eid1;
+
+# 举例3: 声明存储过程"update_salary_by_eid2"，定义IN参数emp_id，输入员工编号。
+# 判断该员工薪资如果低于9000元并且入职时间超过5年，就涨薪500元; 否则就涨薪100元。
+DELIMITER //
+
+CREATE PROCEDURE update_salary_by_eid2(IN emp_id INT)
+BEGIN
+    DECLARE emp_sal DOUBLE;
+    DECLARE hire_year DOUBLE;
+
+    SELECT salary INTO emp_sal FROM employees WHERE employee_id = emp_id;
+
+    SELECT DATEDIFF(CURDATE(), hire_date) / 365 INTO hire_year FROM employees WHERE employee_id = emp_id;
+
+    IF emp_sal < 9000 AND hire_year >= 5
+    THEN
+        UPDATE employees SET salary=salary + 500 WHERE employee_id = emp_id;
+    ELSE
+        UPDATE employees SET salary=salary + 100 WHERE employee_id = emp_id;
+    END IF;
+END //
+
+DELIMITER ;
+
+SELECT *
+FROM employees
+WHERE employee_id IN (103, 104);
+
+SELECT employee_id, DATEDIFF(CURDATE(), hire_date) / 365, salary
+FROM employees
+WHERE salary < 9000
+  AND DATEDIFF(CURDATE(), hire_date) / 365 >= 5;
+
+# 调用
+CALL update_salary_by_eid2(104);
+
+# 举例4: 声明存储过程"update_salary_by_eid3"，定义IN参数emp_id，输入员工编号。
+# 判断该员工薪资如果低于9000元，就更新薪资为9000元; 薪资如果大于等于9000元且
+# 低于10000元的，但是奖金比例为NULL的，就更新奖金比例为0.01; 其他的涨薪100元。
+DELIMITER //
+
+CREATE PROCEDURE update_salary_by_eid3(IN emp_id INT)
+BEGIN
+    # 声明局部变量
+    DECLARE emp_sal DOUBLE; # 记录员工的工资
+    DECLARE bonus DOUBLE; # 记录员工的奖金率
+
+    SELECT salary INTO emp_sal FROM employees WHERE employee_id = emp_id;
+    SELECT commission_pct INTO bonus FROM employees WHERE employee_id = emp_id;
+
+    IF emp_sal < 9000
+    THEN
+        UPDATE employees SET salary=9000 WHERE employee_id = emp_id;
+    ELSEIF emp_sal < 10000 AND bonus IS NULL
+    THEN
+        UPDATE employees SET commission_pct=0.01 WHERE employee_id = emp_id;
+    ELSE
+        UPDATE employees SET salary=salary + 100 WHERE employee_id = emp_id;
+    END IF;
+END //
+
+DELIMITER ;
+
+# 调用
+CALL update_salary_by_eid3(104);
+
+SELECT *
+FROM employees
+WHERE employee_id IN (102, 103, 104);
+
