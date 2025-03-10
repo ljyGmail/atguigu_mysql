@@ -935,4 +935,125 @@ FROM employees;
 4. 迭代条件
  */
 
- 
+# 5.1 LEAVE语句
+
+/*
+举例1: 创建存储过程"leave_begin()"，声明INT类型的IN参数num。给BEGIN...END加标记名，并在BEGIN...END中
+使用IF语句判断num参数的值。
+    - 如果NUM<=0，则使用LEAVE语句退出BEGIN...END;
+    - 如果NUM=1，则查询"employees"表的平均薪资;
+    - 如果NUM=2，则查询"employees"表的最低薪资;
+    - 如果NUM>2，则查询"employees"表的最高薪资;
+IF语句结束后查询"employees"表的总人数。
+ */
+
+DELIMITER //
+
+CREATE PROCEDURE leave_begin(IN num INT)
+
+begin_label:
+BEGIN
+    IF num <= 0
+    THEN
+        LEAVE begin_label;
+    ELSEIF num = 1
+    THEN
+        SELECT AVG(salary) FROM employees;
+    ELSEIF num = 2
+    THEN
+        SELECT MIN(salary) FROM employees;
+    ELSE
+        SELECT MAX(salary) FROM employees;
+    END IF;
+
+    # 查询总人数
+    SELECT COUNT(*) FROM employees;
+END
+//
+
+DELIMITER ;
+
+# 调用
+CALL leave_begin(1);
+
+# 举例2: 当市场环境不好时，公司为了渡过难关，决定暂时降低大家的薪资。
+# 声明存储过程"leave_while()"，声明OUT参数num，输出循环次数，存储过程中使用WHILE
+# 循环给大家降低薪资为原来薪资的90%，直到全公司的平均薪资小于等于10000，并统计循环次数。
+
+DELIMITER //
+
+CREATE PROCEDURE leave_while(OUT num INT)
+BEGIN
+    # 声明变量
+    DECLARE avg_sal DOUBLE; # 记录平均工资
+    DECLARE while_count INT DEFAULT 0;
+    # 记录循环的次数
+
+    # 赋值
+    SELECT AVG(salary) INTO avg_sal FROM employees; # ① 初始化条件
+
+    while_label:
+    WHILE TRUE # ② 循环条件
+        DO
+            # ③ 循环体
+            IF avg_sal <= 10000
+            THEN
+                LEAVE while_label;
+            END IF;
+
+            # 赋值
+            SET while_count = while_count + 1;
+            UPDATE employees SET salary = salary * 0.9 WHERE TRUE;
+
+            # ④ 迭代条件
+            SELECT AVG(salary) INTO avg_sal FROM employees;
+        END WHILE;
+
+    SET num = while_count;
+END //
+
+DELIMITER ;
+
+# 调用
+CALL leave_while(@num);
+SELECT @num;
+
+SELECT AVG(salary)
+FROM employees;
+
+# 5.2 ITERATE的使用
+/*
+举例: 定义局部变量num，初始值为0.循环结构中执行num + 1操作。
+
+- 如果num < 10，则继续执行循环;
+- 如果num > 15，则退出循环结构。
+ */
+
+DELIMITER //
+
+CREATE PROCEDURE test_iterate()
+BEGIN
+    DECLARE num INT DEFAULT 0;
+
+    loop_label:
+    LOOP
+        # 赋值
+        SET num = num + 1;
+
+        IF num < 10
+        THEN
+            ITERATE loop_label;
+        ELSEIF num > 15
+        THEN
+            LEAVE loop_label;
+        END IF;
+
+        SELECT '尚硅谷: 让天下没有难学的技术';
+    END LOOP;
+END //
+
+DELIMITER ;
+
+# 调用
+CALL test_iterate();
+
