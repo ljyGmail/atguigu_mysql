@@ -71,7 +71,7 @@ DELIMITER $;
 
 # 测试
 INSERT INTO test_trigger(t_note)
-VALUES ('Jerry1...');
+VALUES ('Jerry2...');
 
 SELECT *
 FROM test_trigger;
@@ -132,4 +132,114 @@ VALUES (301, 'Tom1', 'tom1@126.com', CURDATE(), 'AD_VP', 10000, 103);
 
 SELECT *
 FROM employees;
+
+# 2. 查看触发器
+# ① 查看当前数据库的所有触发器的定义
+SHOW TRIGGERS;
+
+# ② 查看当前数据库中某个触发器的定义
+
+SHOW CREATE TRIGGER salary_check_trigger;
+# ③ 从系统库information_schema的TRIGGERS表中查询"salary_check_trigger"触发器的信息。
+SELECT *
+FROM information_schema.TRIGGERS;
+
+# 3. 删除触发器
+DROP TRIGGER IF EXISTS after_insert_test_tri;
+
+
+# 课后练习
+
+#0. 准备工作
+CREATE DATABASE test17_trigger;
+USE test17_trigger;
+
+CREATE TABLE emps
+AS
+SELECT employee_id, last_name, salary
+FROM atguigudb.`employees`;
+
+SELECT *
+FROM emps;
+
+#1. 复制一张emps表的空表emps_back，只有表结构，不包含任何数据
+CREATE TABLE emps_back
+AS
+SELECT *
+FROM emps
+WHERE FALSE;
+
+#2. 查询emps_back表中的数据
+SELECT *
+FROM emps_back;
+
+#3. 创建触发器emps_insert_trigger，每当向emps表中添加一条记录时，同步将这条记录添加到emps_back表中
+DELIMITER //
+
+CREATE TRIGGER emps_insert_trigger
+    AFTER INSERT
+    ON emps
+    FOR EACH ROW
+BEGIN
+    # 将新添加到emps表中的记录添加到emps_back表中
+    INSERT INTO emps_back(employee_id, last_name, salary)
+    VALUES (new.employee_id, NEW.last_name, new.salary);
+END //
+
+DELIMITER ;
+
+SHOW TRIGGERS;
+
+#4. 验证触发器是否起作用
+SELECT *
+FROM emps;
+
+SELECT *
+FROM emps_back;
+
+INSERT INTO emps(employee_id, last_name, salary)
+VALUES (301, 'Tom1', 3600);
+
+# 练习2:
+#0. 准备工作：使用练习1中的emps表
+
+#1. 复制一张emps表的空表emps_back1，只有表结构，不包含任何数据
+CREATE TABLE emps_back1
+AS
+SELECT *
+FROM emps
+WHERE FALSE;
+
+#2. 查询emps_back1表中的数据
+SELECT *
+FROM emps_back1;
+
+#3. 创建触发器emps_del_trigger，每当向emps表中删除一条记录时，同步将删除的这条记录添加到emps_back1表中
+DELIMITER //
+
+CREATE TRIGGER emps_del_trigger
+    BEFORE DELETE
+    ON emps
+    FOR EACH ROW
+BEGIN
+    INSERT INTO emps_back1 (employee_id, last_name, salary)
+    VALUES (old.employee_id, old.last_name, old.salary);
+END //
+
+DELIMITER ;
+
+#4. 验证触发器是否起作用
+DELETE
+FROM emps
+WHERE employee_id = 101;
+
+DELETE
+FROM emps
+WHERE TRUE;
+
+SELECT *
+FROM emps;
+
+SELECT *
+FROM emps_back1;
 
